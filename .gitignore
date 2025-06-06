@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+.eggs/
+*.log
+
+# Airflow (ne jamais commit le contenu runtime ou les bases)
+airflow/airflow.db
+airflow/unittests.cfg
+airflow/logs/
+airflow/.airflowenv
+airflow/.pythonhistory
+airflow/tmp/
+
+# Environnement virtuel
+.venv/
+env/
+ENV/
+venv/
+.pip-wheel-metadata/
+pip-wheel-metadata/
+
+# Docker
+*.pid
+*.pid.lock
+*.sock
+docker-compose.override.yml
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# Trino
+trino/catalog/*.properties  # sauf si tu veux versionner un exemple générique
+
+# Git
+.git/
