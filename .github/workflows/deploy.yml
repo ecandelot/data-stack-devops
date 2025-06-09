@@ -52,3 +52,11 @@ jobs:
           cd ~/stack_data
           docker compose down
           docker compose up -d --build
+          
+    - name: Recreate .env file on remote
+      run: |
+        echo "AIRFLOW_USER=${{ secrets.AIRFLOW_USER }}" >> .env
+        echo "AIRFLOW_PASSWORD=${{ secrets.AIRFLOW_PASSWORD }}" >> .env
+        echo "AIRFLOW_DB=${{ secrets.AIRFLOW_DB }}" >> .env
+        echo "AIRFLOW_SECRET=${{ secrets.AIRFLOW_SECRET }}" >> .env
+        echo "TRINO_PORT=${{ secrets.TRINO_PORT }}" >> .env
