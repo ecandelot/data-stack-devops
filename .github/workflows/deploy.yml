@@ -88,6 +88,24 @@ jobs:
         username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
+          echo "Debugging secret values:"
+          echo "AIRFLOW_USER is set to: $AIRFLOW_USER"
+          echo "AIRFLOW_PASSWORD is set to: $AIRFLOW_PASSWORD"
+          echo "AIRFLOW_DB is set to: $AIRFLOW_DB"
+          echo "AIRFLOW_SECRET is set to: $AIRFLOW_SECRET"
+          echo "AIRFLOW_PORT is set to: $AIRFLOW_PORT"
+          echo "AIRFLOW_EXECUTOR is set to: $AIRFLOW_EXECUTOR"
+          echo "AIRFLOW_FIRSTNAME is set to: $AIRFLOW_FIRSTNAME"
+          echo "AIRFLOW_LASTNAME is set to: $AIRFLOW_LASTNAME"
+          echo "AIRFLOW_ROLE is set to: $AIRFLOW_ROLE"
+          echo "AIRFLOW_EMAIL is set to: $AIRFLOW_EMAIL"
+          echo "TRINO_PORT is set to: $TRINO_PORT"
+          echo "TRINO_CATALOG_PATH is set to: $TRINO_CATALOG_PATH"
+          echo "POSTGRES_USER is set to: $POSTGRES_USER"
+          echo "POSTGRES_PASSWORD is set to: $POSTGRES_PASSWORD"
+          echo "POSTGRES_DB is set to: $POSTGRES_DB"
+          echo "POSTGRES_PORT is set to: $POSTGRES_PORT"
+
           cd ~/stack_data
           cat > .env <<EOF
           AIRFLOW_USER=$AIRFLOW_USER
