@@ -86,7 +86,8 @@ jobs:
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
+        key: ${{ secrets.DEPLOY_KEY }}``
+        envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT
         script: |
           echo "Debugging secret values:"
           echo "AIRFLOW_USER is set to: $AIRFLOW_USER"
