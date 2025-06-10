@@ -50,7 +50,4 @@ if __name__ == "__main__":
         if name == "GITHUB_TOKEN" or name == "GITHUB_REPO":
             print(f"⚠️ Ignored secret {name} (réservé par GitHub)")
             continue
-        if value is None or value == "":
-            print(f"⚠️ Secret {name} vide, ignoré.")
-            continue
         put_secret(name, value, public_key, key_id)
