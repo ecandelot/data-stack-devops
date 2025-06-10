@@ -72,6 +72,7 @@ jobs:
         AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
         AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
         TRINO_PORT: ${{ secrets.TRINO_PORT }}
+        TRINO_CATALOG_PATH: ${{ secrets.TRINO_CATALOG_PATH }}
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
@@ -84,6 +85,7 @@ jobs:
           AIRFLOW_DB=$AIRFLOW_DB
           AIRFLOW_SECRET=$AIRFLOW_SECRET
           TRINO_PORT=$TRINO_PORT
+          TRINO_CATALOG_PATH=$TRINO_CATALOG_PATH 
           EOF
 
     - name: Remote deploy command - docker compose up
@@ -95,4 +97,4 @@ jobs:
         script: |
           cd ~/stack_data
           docker-compose down
-          docker-compose up -d --build
+          docker-compose --env-file .env up -d --build
