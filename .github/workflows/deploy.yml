@@ -64,25 +64,6 @@ jobs:
         source: "."
         target: "~/stack_data"
 
-    - name: Debug secrets
-      run: |
-        echo "AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}"
-        echo "AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}"
-        echo "AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}"
-        echo "AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}"
-        echo "AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}"
-        echo "AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}"
-        echo "AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}"
-        echo "AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}"
-        echo "AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}"
-        echo "AIRFLOW_EMAIL: ${{ secrets.AIRFLOW_EMAIL }}"
-        echo "TRINO_PORT: ${{ secrets.TRINO_PORT }}"
-        echo "TRINO_CATALOG_PATH: ${{ secrets.TRINO_CATALOG_PATH }}"
-        echo "POSTGRES_USER: ${{ secrets.POSTGRES_USER }}"
-        echo "POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}"
-        echo "POSTGRES_DB: ${{ secrets.POSTGRES_DB }}"
-        echo "POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}"
-
     - name: Create .env on remote
       uses: appleboy/ssh-action@master
       env:
@@ -144,6 +125,7 @@ jobs:
           POSTGRES_DB=$POSTGRES_DB
           POSTGRES_PORT=$POSTGRES_PORT
           EOF
+
 
 
     - name: Remote deploy command - docker compose up
