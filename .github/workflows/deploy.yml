@@ -27,12 +27,10 @@ jobs:
       continue-on-error: true
       run: |
         npm install --global prettier
-        prettier --write "**/*.yml" "**/*.yaml"
+        prettier --write "**/*.{yml,yaml}"
 
-    - name: Build Docker images
-      run: |
-        docker build -t $AIRFLOW_IMAGE ./docker/airflow
-        docker build -t $TRINO_IMAGE ./docker/trino
+    - name: Build Docker images via Compose
+      run: docker compose build
 
     - name: Deploy via SCP
       uses: appleboy/scp-action@master
