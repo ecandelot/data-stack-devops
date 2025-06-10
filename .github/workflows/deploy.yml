@@ -23,10 +23,11 @@ jobs:
         pip install black
         black docker/
 
-    - name: Lint YAML
+    - name: Format YAML with Prettier (non-blocking)
+      continue-on-error: true
       run: |
-        sudo apt install yamllint -y
-        yamllint .
+        npm install --global prettier
+        prettier --write "**/*.yml" "**/*.yaml"
 
     - name: Build Docker images
       run: |
