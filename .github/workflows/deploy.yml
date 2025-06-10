@@ -54,7 +54,7 @@ jobs:
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USER }}
-        key: ${{ secrets.VM_SSH_KEY }}
+        key: ${{ secrets.DEPLOY_KEY }}
         source: "."
         target: "~/stack_data"
 
@@ -70,7 +70,7 @@ jobs:
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USER }}
-        key: ${{ secrets.VM_SSH_KEY }}
+        key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
           cat > .env <<EOF
@@ -86,7 +86,7 @@ jobs:
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USER }}
-        key: ${{ secrets.VM_SSH_KEY }}
+        key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
           docker compose down
