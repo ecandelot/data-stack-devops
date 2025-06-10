@@ -80,22 +80,22 @@ jobs:
         script: |
           cd ~/stack_data
           cat > .env <<EOF
-          AIRFLOW_USER=${AIRFLOW_USER}
-          AIRFLOW_PASSWORD=${AIRFLOW_PASSWORD}
-          AIRFLOW_DB=${AIRFLOW_DB}
-          AIRFLOW_SECRET=${AIRFLOW_SECRET}
-          AIRFLOW_PORT=${AIRFLOW_PORT}
-          AIRFLOW_EXECUTOR=${AIRFLOW_EXECUTOR}
-          AIRFLOW_FIRSTNAME=${AIRFLOW_FIRSTNAME}
-          AIRFLOW_LASTNAME=${AIRFLOW_LASTNAME}
-          AIRFLOW_ROLE=${AIRFLOW_ROLE}
-          AIRFLOW_EMAIL=${AIRFLOW_EMAIL}
-          TRINO_PORT=${TRINO_PORT}
-          TRINO_CATALOG_PATH=${TRINO_CATALOG_PATH}
-          POSTGRES_USER=${POSTGRES_USER}
-          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-          POSTGRES_DB=${POSTGRES_DB}
-          POSTGRES_PORT=${POSTGRES_PORT}
+          AIRFLOW_USER=${{ secrets.AIRFLOW_USER }}
+          AIRFLOW_PASSWORD=${{ secrets.AIRFLOW_PASSWORD }}
+          AIRFLOW_DB=${{ secrets.AIRFLOW_DB }}
+          AIRFLOW_SECRET=${{ secrets.AIRFLOW_SECRET }}
+          AIRFLOW_PORT=${{ secrets.AIRFLOW_PORT }}
+          AIRFLOW_EXECUTOR=${{ secrets.AIRFLOW_EXECUTOR }}
+          AIRFLOW_FIRSTNAME=${{ secrets.AIRFLOW_FIRSTNAME }}
+          AIRFLOW_LASTNAME=${{ secrets.AIRFLOW_LASTNAME }}
+          AIRFLOW_ROLE=${{ secrets.AIRFLOW_ROLE }}
+          AIRFLOW_EMAIL=${{ secrets.AIRFLOW_EMAIL }}
+          TRINO_PORT=${{ secrets.TRINO_PORT }}
+          TRINO_CATALOG_PATH=${{ secrets.TRINO_CATALOG_PATH }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
           EOF
 
     - name: Remote deploy command - docker compose up
