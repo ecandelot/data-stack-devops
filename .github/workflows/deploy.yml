@@ -127,7 +127,7 @@ jobs:
           POSTGRES_PORT=$POSTGRES_PORT
           EOF
 
-    - name: Remote deploy command - docker compose up
+    - name: Remote deploy command - podman compose up
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -136,9 +136,6 @@ jobs:
         envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT
         script: |
           cd ~/stack_data
-          # Assurez-vous que l'alias est défini
-          echo "alias docker=podman" >> ~/.bashrc
-          source ~/.bashrc
-          # Exécutez docker-compose avec Podman
-          docker-compose down
-          docker-compose --env-file .env up -d --build
+          podman-compose down
+          podman-compose --env-file .env up -d --build
+
