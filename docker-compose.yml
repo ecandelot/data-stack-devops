@@ -1,6 +1,6 @@
 services:
   airflow:
-    image: apache/airflow:2.9.1-python3.10
+    image: docker.io/apache/airflow:2.9.1-python3.10
     container_name: airflow
     ports:
       - "${AIRFLOW_PORT}:8080"
@@ -15,10 +15,8 @@ services:
     command: >
       bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname ${AIRFLOW_FIRSTNAME} --lastname ${AIRFLOW_LASTNAME} --role ${AIRFLOW_ROLE} --email ${AIRFLOW_EMAIL} && airflow webserver"
 
-
-
   trino:
-    image: trinodb/trino:latest
+    image: docker.io/trinodb/trino:latest
     container_name: trino
     ports:
       - "${TRINO_PORT}:8080"
@@ -28,7 +26,7 @@ services:
       - ${TRINO_CATALOG_PATH}:/etc/trino/catalog
 
   postgres:
-    image: postgres:15
+    image: docker.io/postgres:15
     container_name: postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
