@@ -9,9 +9,26 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    # Injection des secrets dans les variables d'environnement du job
     env:
       AIRFLOW_IMAGE: airflow-custom
       TRINO_IMAGE: trino-custom
+      AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
+      AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
+      AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
+      AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+      AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
+      AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+      AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}
+      AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}
+      AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}
+      AIRFLOW_EMAIL: ${{ secrets.AIRFLOW_EMAIL }}
+      TRINO_PORT: ${{ secrets.TRINO_PORT }}
+      TRINO_CATALOG_PATH: ${{ secrets.TRINO_CATALOG_PATH }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
 
     steps:
     - name: Checkout code
@@ -32,7 +49,7 @@ jobs:
     - name: Build Docker images via Compose
       run: docker compose build
 
-    - name: Deploy via SCP
+    - name: Deploy files to remote host
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.VM_HOST }}
@@ -43,6 +60,13 @@ jobs:
 
     - name: Create .env on remote
       uses: appleboy/ssh-action@master
+      # Injection explicite des variables d'env pour le script distant
+      env:
+        AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
+        AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+        AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
+        AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+        TRINO_PORT: ${{ secrets.TRINO_PORT }}
       with:
         host: ${{ secrets.VM_HOST }}
         username: ${{ secrets.VM_USER }}
@@ -50,14 +74,14 @@ jobs:
         script: |
           cd ~/stack_data
           cat > .env <<EOF
-          AIRFLOW_USER=${{ secrets.AIRFLOW_USER }}
-          AIRFLOW_PASSWORD=${{ secrets.AIRFLOW_PASSWORD }}
-          AIRFLOW_DB=${{ secrets.AIRFLOW_DB }}
-          AIRFLOW_SECRET=${{ secrets.AIRFLOW_SECRET }}
-          TRINO_PORT=${{ secrets.TRINO_PORT }}
+          AIRFLOW_USER=$AIRFLOW_USER
+          AIRFLOW_PASSWORD=$AIRFLOW_PASSWORD
+          AIRFLOW_DB=$AIRFLOW_DB
+          AIRFLOW_SECRET=$AIRFLOW_SECRET
+          TRINO_PORT=$TRINO_PORT
           EOF
 
-    - name: Remote deploy command
+    - name: Remote deploy command - Docker Compose up
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.VM_HOST }}
