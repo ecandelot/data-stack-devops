@@ -47,7 +47,7 @@ jobs:
         prettier --write "**/*.{yml,yaml}"
 
     - name: Build Docker images via Compose
-      run: docker compose build
+      run: docker-compose build
 
     - name: Deploy files to remote host
       uses: appleboy/scp-action@master
@@ -81,7 +81,7 @@ jobs:
           TRINO_PORT=$TRINO_PORT
           EOF
 
-    - name: Remote deploy command - Docker Compose up
+    - name: Remote deploy command - docker-compose up
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -89,5 +89,5 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          docker compose down
-          docker compose up -d --build
+          docker-compose down
+          docker-compose up -d --build
