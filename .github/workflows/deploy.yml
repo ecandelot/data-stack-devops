@@ -52,8 +52,8 @@ jobs:
     - name: Deploy files to remote host
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.VM_HOST }}
-        username: ${{ secrets.VM_USER }}
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         source: "."
         target: "~/stack_data"
@@ -68,8 +68,8 @@ jobs:
         AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
         TRINO_PORT: ${{ secrets.TRINO_PORT }}
       with:
-        host: ${{ secrets.VM_HOST }}
-        username: ${{ secrets.VM_USER }}
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
@@ -84,8 +84,8 @@ jobs:
     - name: Remote deploy command - Docker Compose up
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.VM_HOST }}
-        username: ${{ secrets.VM_USER }}
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
