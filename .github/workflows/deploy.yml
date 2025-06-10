@@ -33,7 +33,7 @@ jobs:
         docker build -t $AIRFLOW_IMAGE ./docker/airflow
         docker build -t $TRINO_IMAGE ./docker/trino
 
-    - name: Deploy via SSH
+    - name: Deploy via SCP
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.VM_HOST }}
@@ -41,6 +41,22 @@ jobs:
         key: ${{ secrets.VM_SSH_KEY }}
         source: "."
         target: "~/stack_data"
+
+    - name: Create .env on remote
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          cd ~/stack_data
+          cat > .env <<EOF
+          AIRFLOW_USER=${{ secrets.AIRFLOW_USER }}
+          AIRFLOW_PASSWORD=${{ secrets.AIRFLOW_PASSWORD }}
+          AIRFLOW_DB=${{ secrets.AIRFLOW_DB }}
+          AIRFLOW_SECRET=${{ secrets.AIRFLOW_SECRET }}
+          TRINO_PORT=${{ secrets.TRINO_PORT }}
+          EOF
 
     - name: Remote deploy command
       uses: appleboy/ssh-action@master
@@ -52,11 +68,3 @@ jobs:
           cd ~/stack_data
           docker compose down
           docker compose up -d --build
-          
-    - name: Recreate .env file on remote
-      run: |
-        echo "AIRFLOW_USER=${{ secrets.AIRFLOW_USER }}" >> .env
-        echo "AIRFLOW_PASSWORD=${{ secrets.AIRFLOW_PASSWORD }}" >> .env
-        echo "AIRFLOW_DB=${{ secrets.AIRFLOW_DB }}" >> .env
-        echo "AIRFLOW_SECRET=${{ secrets.AIRFLOW_SECRET }}" >> .env
-        echo "TRINO_PORT=${{ secrets.TRINO_PORT }}" >> .env
