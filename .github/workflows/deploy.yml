@@ -86,12 +86,12 @@ jobs:
     - name: Create .env on remote
       uses: appleboy/ssh-action@master
       env:
-        AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
-        AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
-        AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
-        AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
         AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
         AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+        AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
+        AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+        AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
+        AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
         AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}
         AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}
         AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}
@@ -144,6 +144,7 @@ jobs:
           POSTGRES_DB=$POSTGRES_DB
           POSTGRES_PORT=$POSTGRES_PORT
           EOF
+
 
     - name: Remote deploy command - docker compose up
       uses: appleboy/ssh-action@master
