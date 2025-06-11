@@ -32,6 +32,8 @@ jobs:
       NODE_EXPORTER_PORT: ${{ secrets.NODE_EXPORTER_PORT }}
       PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
       GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
+      GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+      AIRFLOW_METRICS_EXPORTER: ${{ secrets.AIRFLOW_METRICS_EXPORTER }}
 
     steps:
     - name: Checkout code
@@ -91,6 +93,8 @@ jobs:
         NODE_EXPORTER_PORT: ${{ secrets.NODE_EXPORTER_PORT }}
         PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
         GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
+        GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+        AIRFLOW_METRICS_EXPORTER: ${{ secrets.AIRFLOW_METRICS_EXPORTER }}
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
@@ -118,6 +122,8 @@ jobs:
           NODE_EXPORTER_PORT=$NODE_EXPORTER_PORT
           PROMETHEUS_PORT=$PROMETHEUS_PORT
           GRAFANA_PORT=$GRAFANA_PORT
+          GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD
+          AIRFLOW_METRICS_EXPORTER=$AIRFLOW_METRICS_EXPORTER
           EOF
 
     - name: Deploy containers with podman-compose
@@ -143,6 +149,8 @@ jobs:
         NODE_EXPORTER_PORT: ${{ secrets.NODE_EXPORTER_PORT }}
         PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
         GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
+        GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+        AIRFLOW_METRICS_EXPORTER: ${{ secrets.AIRFLOW_METRICS_EXPORTER }}
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
