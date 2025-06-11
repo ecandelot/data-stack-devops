@@ -136,4 +136,29 @@ jobs:
           cd ~/stack_data
           podman-compose down || echo "Nothing to stop"
           podman-compose --env-file .env build
-          podman-compose --env-file .env up -d && podman-compose logs --no-color
+          podman-compose --env-file .env up -d
+
+    - name: List running podman containers and save airflow container name
+      id: list_containers
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          # Affiche tous les containers
+          podman ps --format "{{.Names}}"
+
+          # Trouve le nom du container airflow (exemple : nom contenant 'airflow')
+          airflow_container=$(podman ps --format "{{.Names}}" | grep airflow | head -n1)
+          echo "AIRFLOW_CONTAINER=$airflow_container" >> $GITHUB_ENV
+
+    # Ici tu peux utiliser la variable $AIRFLOW_CONTAINER dans d'autres jobs/étapes si besoin, par exemple :
+    #- name: Exec command in airflow container (example)
+    #  uses: appleboy/ssh-action@master
+    #  with:
+    #    host: ${{ secrets.DEPLOY_HOST }}
+    #    username: ${{ secrets.DEPLOY_USER }}
+    #    key: ${{ secrets.DEPLOY_KEY }}
+    #    script: |
+    #      podman exec $AIRFLOW_CONTAINER airflow db check
