@@ -10,12 +10,11 @@ ingester:
       kvstore:
         store: inmemory
       replication_factor: 1
+    heartbeat_period: 5s
+    join_after: 0s
   chunk_idle_period: 5m
   max_chunk_age: 1h
   chunk_target_size: 1048576
-  lifecycler:
-    heartbeat_period: 5s
-    join_after: 0s
 
 schema_config:
   configs:
