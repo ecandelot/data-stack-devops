@@ -85,20 +85,19 @@ services:
     command: -config.file=/etc/loki/config.yaml
     volumes:
       - ./docker/loki/config.yaml:/etc/loki/config.yaml:ro
-
   fluent-bit:
     image: fluent/fluent-bit:2.2
     container_name: fluent-bit
     ports:
       - "${FLUENT_BIT_PORT}:2020"
     volumes:
-      - ./docker/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
-      - ./docker/fluent-bit/entrypoint.sh:/entrypoint.sh:ro
+      - ./docker/fluent-bit/fluent-bit.conf.template:/fluent-bit/etc/fluent-bit.conf.template:ro
+      - ./docker/fluent-bit/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
       - /var/lib/containers:/var/lib/containers:ro
       - /var/log:/var/log:ro
-    entrypoint: /entrypoint.sh
     environment:
       - LOKI_PORT=${LOKI_PORT}
+    entrypoint: /usr/local/bin/entrypoint.sh
     depends_on:
       - loki
 

@@ -149,6 +149,30 @@ jobs:
       run: |
         find . -type f -name 'entrypoint.sh' -exec chmod +x {} \;
 
+    - name: Fix permissions for config files and scripts
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          cd ~/stack_data
+          sudo chmod -R 755 ./docker/fluent-bit/entrypoint.sh
+
+    - name: Verify and generate Fluent-bit config
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          cd ~/stack_data
+          ls -l ./docker/fluent-bit/fluent-bit.conf.template
+          cat ./docker/fluent-bit/fluent-bit.conf.template
+          sudo chmod +x ./docker/fluent-bit/entrypoint.sh
+          ./docker/fluent-bit/entrypoint.sh
+
+
     - name: Verify Loki and Fluent-bit config files
       uses: appleboy/ssh-action@master
       with:
@@ -158,8 +182,6 @@ jobs:
         script: |
           ls -l ~/stack_data/docker/loki/config.yaml
           cat ~/stack_data/docker/loki/config.yaml
-          ls -l ~/stack_data/docker/fluent-bit/fluent-bit.conf
-          cat ~/stack_data/docker/fluent-bit/fluent-bit.conf
 
     - name: Build and deploy with podman-compose
       uses: appleboy/ssh-action@master
