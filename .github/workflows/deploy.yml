@@ -124,6 +124,12 @@ jobs:
           cd ~/stack_data
           sudo chown -R 1000:1000 .
           sudo chmod -R u+rwX .
+          # Déplacez le fichier config.yaml dans le bon répertoire s'il est mal placé
+          if [ -f ~/stack_data/loki/config.yaml ]; then
+            mkdir -p ~/stack_data/docker/loki
+            mv ~/stack_data/loki/config.yaml ~/stack_data/docker/loki/
+          fi
+
 
     - name: Fix permissions for config files and scripts
       uses: appleboy/ssh-action@master

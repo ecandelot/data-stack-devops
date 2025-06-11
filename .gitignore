@@ -47,3 +47,4 @@ trino/catalog/*.properties  # sauf si tu veux versionner un exemple générique
 
 # Git
 .git/
+docker/airflow/airflow.db
