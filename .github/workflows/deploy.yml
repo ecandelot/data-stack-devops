@@ -78,15 +78,16 @@ jobs:
         npm install --global prettier
         prettier --write "**/*.{yml,yaml}"
 
-    - name: Install Docker Compose CLI plugin
-      run: |
-        mkdir -p ~/.docker/cli-plugins/
-        curl -SL https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
-        chmod +x ~/.docker/cli-plugins/docker-compose
-        docker compose version
-
-    - name: Build Docker images via Compose
-      run: docker compose build
+    - name: Cleanup podman locks on remote (non-blocking)
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          sudo podman ps -a || true
+          sudo podman system prune -f || true
+          find /run/user/$(id -u)/containers/locks/ -type f -delete || true
 
     - name: Deploy files to remote host
       uses: appleboy/scp-action@master
@@ -106,7 +107,7 @@ jobs:
         script: |
           ls -l ~/stack_data/.env
 
-    - name: Deploy containers with podman-compose
+    - name: Build and deploy with podman-compose
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -114,5 +115,6 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          podman-compose down
-          podman-compose --env-file .env up -d --build
+          podman-compose down || echo "Nothing to stop"
+          podman-compose --env-file .env build
+          podman-compose --env-file .env up -d
