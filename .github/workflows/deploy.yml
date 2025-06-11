@@ -146,7 +146,16 @@ jobs:
         script: |
           cd ~/stack_data
           podman-compose down || echo "Nothing to stop"
-          podman-compose --env-file .env up -d --build
+          podman-compose --env-file .env up -d --build --no-cache
+      
+    - name: Check Loki logs
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          podman logs loki
 
     - name: List running podman containers and save airflow container name
       id: list_containers
