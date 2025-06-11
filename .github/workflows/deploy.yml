@@ -89,6 +89,18 @@ jobs:
           sudo podman system prune -f || true
           find /run/user/$(id -u)/containers/locks/ -type f -delete || true
 
+    - name: Configure short-name registry resolution
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          sudo mkdir -p /etc/containers
+          echo '[registries.search]' | sudo tee /etc/containers/registries.conf
+          echo 'registries = ["docker.io"]' | sudo tee -a /etc/containers/registries.conf
+
+
     - name: Deploy files to remote host
       uses: appleboy/scp-action@master
       with:
