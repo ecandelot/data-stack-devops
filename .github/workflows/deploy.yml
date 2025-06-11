@@ -104,7 +104,6 @@ jobs:
           echo '[registries.search]' | sudo tee /etc/containers/registries.conf
           echo 'registries = ["docker.io"]' | sudo tee -a /etc/containers/registries.conf
 
-
     - name: Deploy files to remote host
       uses: appleboy/scp-action@master
       with:
@@ -123,6 +122,10 @@ jobs:
         script: |
           ls -l ~/stack_data/.env
 
+    - name: Make all entrypoint.sh scripts executable (safe)
+      run: |
+        find . -type f -name 'entrypoint.sh' -exec chmod +x {} \;
+        
     - name: Build and deploy with podman-compose
       uses: appleboy/ssh-action@master
       with:
