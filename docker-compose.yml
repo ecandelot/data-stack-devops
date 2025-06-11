@@ -21,11 +21,11 @@ services:
     entrypoint: >
       bash -c "
       airflow db migrate &&
-      airflow users create --username ${AIRFLOW_USER} \
-                           --password ${AIRFLOW_PASSWORD} \
-                           --firstname ${AIRFLOW_FIRSTNAME} \
-                           --lastname ${AIRFLOW_LASTNAME} \
-                           --role ${AIRFLOW_ROLE} \
+      airflow users create --username ${AIRFLOW_USER}
+                           --password ${AIRFLOW_PASSWORD}
+                           --firstname ${AIRFLOW_FIRSTNAME}
+                           --lastname ${AIRFLOW_LASTNAME}
+                           --role ${AIRFLOW_ROLE}
                            --email ${AIRFLOW_EMAIL} --force-reset-password false || true &&
       exec airflow webserver"
 
@@ -55,7 +55,7 @@ services:
     build:
       context: ./docker/prometheus
     ports:
-      - "${PROMETHEUS_PORT}:9100"
+      - "${PROMETHEUS_PORT}:9090"
     env_file:
       - .env
 
@@ -85,14 +85,14 @@ services:
     command: -config.file=/etc/loki/config.yaml
     volumes:
       - ./docker/loki/config.yaml:/etc/loki/config.yaml:ro
-  
+
   fluent-bit:
     image: fluent/fluent-bit:2.2
     container_name: fluent-bit
     ports:
       - "${FLUENT_BIT_PORT}:2020"
     volumes:
-      - ./docker/fluent-bit/fluent-bit.conf.template:/fluent-bit/etc/fluent-bit.conf.template:ro
+      - ./docker/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
       - ./docker/fluent-bit/entrypoint.sh:/entrypoint.sh:ro
       - /var/lib/containers:/var/lib/containers:ro
       - /var/log:/var/log:ro
@@ -101,7 +101,6 @@ services:
       - LOKI_PORT=${LOKI_PORT}
     depends_on:
       - loki
-
 
 volumes:
   pg_data:

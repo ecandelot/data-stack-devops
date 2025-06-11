@@ -94,7 +94,6 @@ jobs:
           sudo podman system prune -f || true
           find /run/user/$(id -u)/containers/locks/ -type f -delete || true
 
-
     - name: Configure short-name registry resolution
       uses: appleboy/ssh-action@master
       with:
@@ -137,7 +136,6 @@ jobs:
           sudo chmod -R 755 ./docker/loki
           sudo chmod -R 755 ./docker/fluent-bit
 
-
     - name: Verify .env on remote server
       uses: appleboy/ssh-action@master
       with:
@@ -150,7 +148,7 @@ jobs:
     - name: Make all entrypoint.sh scripts executable (safe)
       run: |
         find . -type f -name 'entrypoint.sh' -exec chmod +x {} \;
-    
+
     - name: Verify Loki and Fluent-bit config files
       uses: appleboy/ssh-action@master
       with:
@@ -160,10 +158,9 @@ jobs:
         script: |
           ls -l ~/stack_data/docker/loki/config.yaml
           cat ~/stack_data/docker/loki/config.yaml
-          ls -l ~/stack_data/docker/fluent-bit/fluent-bit.conf.template
-          cat ~/stack_data/docker/fluent-bit/fluent-bit.conf.template
+          ls -l ~/stack_data/docker/fluent-bit/fluent-bit.conf
+          cat ~/stack_data/docker/fluent-bit/fluent-bit.conf
 
-        
     - name: Build and deploy with podman-compose
       uses: appleboy/ssh-action@master
       with:
@@ -174,4 +171,3 @@ jobs:
           cd ~/stack_data
           podman-compose down --rmi all -v || echo "Nothing to stop"
           podman-compose --env-file .env up -d --build --no-cache
-
