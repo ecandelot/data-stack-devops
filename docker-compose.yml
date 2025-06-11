@@ -1,41 +1,82 @@
 services:
   airflow:
-    image: docker.io/apache/airflow:2.9.1-python3.10
+    image: apache/airflow:2.9.1-python3.10
     container_name: airflow
     ports:
       - "${AIRFLOW_PORT}:8080"
+      - "${AIRFLOW_METRICS_PORT}:9102"
     environment:
-      - AIRFLOW__CORE__EXECUTOR=${AIRFLOW_EXECUTOR}
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW_DB}
-      - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET}
-      - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW_USER}
-      - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW_PASSWORD}
+      AIRFLOW__CORE__EXECUTOR: "${AIRFLOW_EXECUTOR}"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "${AIRFLOW_DB}"
+      AIRFLOW__WEBSERVER__SECRET_KEY: "${AIRFLOW_SECRET}"
+      _AIRFLOW_WWW_USER_USERNAME: "${AIRFLOW_USER}"
+      _AIRFLOW_WWW_USER_PASSWORD: "${AIRFLOW_PASSWORD}"
+      AIRFLOW__METRICS__METRICS_EXPORTER: "${AIRFLOW_METRICS_EXPORTER}"
+      AIRFLOW__METRICS__PROMETHEUS_PORT: "${AIRFLOW_METRICS_PORT}"
     volumes:
       - ./docker/airflow:/opt/airflow
-    command: >
-      bash -c "airflow db migrate && airflow users create --username ${AIRFLOW_USER} --password ${AIRFLOW_PASSWORD} --firstname ${AIRFLOW_FIRSTNAME} --lastname ${AIRFLOW_LASTNAME} --role ${AIRFLOW_ROLE} --email ${AIRFLOW_EMAIL} && airflow webserver"
+    depends_on:
+      - postgres
+      - prometheus
+    entrypoint: >
+      bash -c "
+      airflow db migrate &&
+      airflow users create --username ${AIRFLOW_USER} \
+                           --password ${AIRFLOW_PASSWORD} \
+                           --firstname ${AIRFLOW_FIRSTNAME} \
+                           --lastname ${AIRFLOW_LASTNAME} \
+                           --role ${AIRFLOW_ROLE} \
+                           --email ${AIRFLOW_EMAIL} --force-reset-password false || true &&
+      exec airflow webserver"
 
   trino:
-    image: docker.io/trinodb/trino:latest
+    image: trinodb/trino:latest
     container_name: trino
     ports:
       - "${TRINO_PORT}:8080"
     environment:
-      - JAVA_TOOL_OPTIONS=-Xmx1G
+      JAVA_TOOL_OPTIONS: "-Xmx1G"
     volumes:
-      - ${TRINO_CATALOG_PATH}:/etc/trino/catalog
+      - "${TRINO_CATALOG_PATH}:/etc/trino/catalog:ro"
 
   postgres:
-    image: docker.io/postgres:15
+    image: postgres:15
     container_name: postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
     volumes:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT}:5432"
 
+  prometheus:
+    build:
+      context: ./docker/prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9100"
+    env_file:
+      - .env
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "${NODE_EXPORTER_PORT}:9100"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "${GF_SECURITY_ADMIN_PASSWORD}"
+    restart: unless-stopped
+
 volumes:
   pg_data:
+  grafana-storage:

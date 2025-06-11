@@ -5,19 +5,19 @@ on:
     branches:
       - main
 
+
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
+    # Déclaration globale des variables d'environnement, issues des secrets
     env:
-      AIRFLOW_IMAGE: airflow-custom
-      TRINO_IMAGE: trino-custom
-      AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
-      AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
-      AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
-      AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
       AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
       AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+      AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
+      AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+      AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
+      AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
       AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}
       AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}
       AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}
@@ -28,9 +28,13 @@ jobs:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
       POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      AIRFLOW_METRICS_PORT: ${{ secrets.AIRFLOW_METRICS_PORT }}
+      NODE_EXPORTER_PORT: ${{ secrets.NODE_EXPORTER_PORT }}
+      PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
+      GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Check formatting with Black (non-blocking)
@@ -64,49 +68,14 @@ jobs:
         source: "."
         target: "~/stack_data"
 
-    - name: Create .env on remote
+    - name: Create .env file on remote server
       uses: appleboy/ssh-action@master
-      env:
-        AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
-        AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
-        AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
-        AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
-        AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
-        AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
-        AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}
-        AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}
-        AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}
-        AIRFLOW_EMAIL: ${{ secrets.AIRFLOW_EMAIL }}
-        TRINO_PORT: ${{ secrets.TRINO_PORT }}
-        TRINO_CATALOG_PATH: ${{ secrets.TRINO_CATALOG_PATH }}
-        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT,AIRFLOW_METRICS_PORT,NODE_EXPORTER_PORT,PROMETHEUS_PORT,GRAFANA_PORT
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}``
-        envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT
+        key: ${{ secrets.DEPLOY_KEY }}
         script: |
-          echo "Debugging secret values:"
-          echo "AIRFLOW_USER is set to: $AIRFLOW_USER"
-          echo "AIRFLOW_PASSWORD is set to: $AIRFLOW_PASSWORD"
-          echo "AIRFLOW_DB is set to: $AIRFLOW_DB"
-          echo "AIRFLOW_SECRET is set to: $AIRFLOW_SECRET"
-          echo "AIRFLOW_PORT is set to: $AIRFLOW_PORT"
-          echo "AIRFLOW_EXECUTOR is set to: $AIRFLOW_EXECUTOR"
-          echo "AIRFLOW_FIRSTNAME is set to: $AIRFLOW_FIRSTNAME"
-          echo "AIRFLOW_LASTNAME is set to: $AIRFLOW_LASTNAME"
-          echo "AIRFLOW_ROLE is set to: $AIRFLOW_ROLE"
-          echo "AIRFLOW_EMAIL is set to: $AIRFLOW_EMAIL"
-          echo "TRINO_PORT is set to: $TRINO_PORT"
-          echo "TRINO_CATALOG_PATH is set to: $TRINO_CATALOG_PATH"
-          echo "POSTGRES_USER is set to: $POSTGRES_USER"
-          echo "POSTGRES_PASSWORD is set to: $POSTGRES_PASSWORD"
-          echo "POSTGRES_DB is set to: $POSTGRES_DB"
-          echo "POSTGRES_PORT is set to: $POSTGRES_PORT"
-
           cd ~/stack_data
           cat > .env <<EOF
           AIRFLOW_USER=$AIRFLOW_USER
@@ -125,15 +94,19 @@ jobs:
           POSTGRES_PASSWORD=$POSTGRES_PASSWORD
           POSTGRES_DB=$POSTGRES_DB
           POSTGRES_PORT=$POSTGRES_PORT
+          AIRFLOW_METRICS_PORT=$AIRFLOW_METRICS_PORT
+          NODE_EXPORTER_PORT=$NODE_EXPORTER_PORT
+          PROMETHEUS_PORT=$PROMETHEUS_PORT
+          GRAFANA_PORT=$GRAFANA_PORT
           EOF
 
-    - name: Remote deploy command - podman compose up
+    - name: Deploy containers with podman-compose
       uses: appleboy/ssh-action@master
+      envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT,AIRFLOW_METRICS_PORT,NODE_EXPORTER_PORT,PROMETHEUS_PORT,GRAFANA_PORT
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
-        envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT
         script: |
           cd ~/stack_data
           podman-compose down
