@@ -146,8 +146,7 @@ jobs:
         script: |
           cd ~/stack_data
           podman-compose down || echo "Nothing to stop"
-          podman-compose --env-file .env build
-          podman-compose --env-file .env up -d
+          podman-compose --env-file .env up -d --build
 
     - name: List running podman containers and save airflow container name
       id: list_containers
