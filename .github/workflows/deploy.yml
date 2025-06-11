@@ -5,19 +5,19 @@ on:
     branches:
       - main
 
-
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
-    # Déclaration globale des variables d'environnement, issues des secrets
     env:
-      AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
-      AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
-      AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
-      AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+      AIRFLOW_IMAGE: airflow-custom
+      TRINO_IMAGE: trino-custom
       AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
       AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
+      AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
+      AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+      AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
+      AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
       AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}
       AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}
       AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}
@@ -34,7 +34,7 @@ jobs:
       GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Check formatting with Black (non-blocking)
@@ -68,9 +68,29 @@ jobs:
         source: "."
         target: "~/stack_data"
 
-    - name: Create .env file on remote server
+    - name: Create .env on remote server
       uses: appleboy/ssh-action@master
-      envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT,AIRFLOW_METRICS_PORT,NODE_EXPORTER_PORT,PROMETHEUS_PORT,GRAFANA_PORT
+      env:
+        AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
+        AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+        AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
+        AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+        AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
+        AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
+        AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}
+        AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}
+        AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}
+        AIRFLOW_EMAIL: ${{ secrets.AIRFLOW_EMAIL }}
+        TRINO_PORT: ${{ secrets.TRINO_PORT }}
+        TRINO_CATALOG_PATH: ${{ secrets.TRINO_CATALOG_PATH }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+        AIRFLOW_METRICS_PORT: ${{ secrets.AIRFLOW_METRICS_PORT }}
+        NODE_EXPORTER_PORT: ${{ secrets.NODE_EXPORTER_PORT }}
+        PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
+        GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
@@ -102,7 +122,27 @@ jobs:
 
     - name: Deploy containers with podman-compose
       uses: appleboy/ssh-action@master
-      envs: AIRFLOW_USER,AIRFLOW_PASSWORD,AIRFLOW_DB,AIRFLOW_SECRET,AIRFLOW_PORT,AIRFLOW_EXECUTOR,AIRFLOW_FIRSTNAME,AIRFLOW_LASTNAME,AIRFLOW_ROLE,AIRFLOW_EMAIL,TRINO_PORT,TRINO_CATALOG_PATH,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,POSTGRES_PORT,AIRFLOW_METRICS_PORT,NODE_EXPORTER_PORT,PROMETHEUS_PORT,GRAFANA_PORT
+      env:
+        AIRFLOW_USER: ${{ secrets.AIRFLOW_USER }}
+        AIRFLOW_PASSWORD: ${{ secrets.AIRFLOW_PASSWORD }}
+        AIRFLOW_DB: ${{ secrets.AIRFLOW_DB }}
+        AIRFLOW_SECRET: ${{ secrets.AIRFLOW_SECRET }}
+        AIRFLOW_PORT: ${{ secrets.AIRFLOW_PORT }}
+        AIRFLOW_EXECUTOR: ${{ secrets.AIRFLOW_EXECUTOR }}
+        AIRFLOW_FIRSTNAME: ${{ secrets.AIRFLOW_FIRSTNAME }}
+        AIRFLOW_LASTNAME: ${{ secrets.AIRFLOW_LASTNAME }}
+        AIRFLOW_ROLE: ${{ secrets.AIRFLOW_ROLE }}
+        AIRFLOW_EMAIL: ${{ secrets.AIRFLOW_EMAIL }}
+        TRINO_PORT: ${{ secrets.TRINO_PORT }}
+        TRINO_CATALOG_PATH: ${{ secrets.TRINO_CATALOG_PATH }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+        AIRFLOW_METRICS_PORT: ${{ secrets.AIRFLOW_METRICS_PORT }}
+        NODE_EXPORTER_PORT: ${{ secrets.NODE_EXPORTER_PORT }}
+        PROMETHEUS_PORT: ${{ secrets.PROMETHEUS_PORT }}
+        GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
@@ -111,4 +151,3 @@ jobs:
           cd ~/stack_data
           podman-compose down
           podman-compose --env-file .env up -d --build
-
