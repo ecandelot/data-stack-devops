@@ -9,7 +9,7 @@ __pycache__/
 *.log
 
 # Airflow (ne jamais commit le contenu runtime ou les bases)
-airflow/airflow.db
+airflow.db
 airflow/unittests.cfg
 airflow/logs/
 airflow/.airflowenv
