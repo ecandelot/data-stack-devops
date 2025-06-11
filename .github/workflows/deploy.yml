@@ -113,6 +113,17 @@ jobs:
         source: "."
         target: "~/stack_data"
 
+    - name: Fix permissions on remote host
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          cd ~/stack_data
+          sudo chown -R 1000:1000 .
+          sudo chmod -R u+rwX .
+
     - name: Verify .env on remote server
       uses: appleboy/ssh-action@master
       with:
