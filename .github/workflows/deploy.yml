@@ -82,7 +82,7 @@ jobs:
         npm install --global prettier
         prettier --write "**/*.{yml,yaml}"
 
-    - name: Cleanup podman locks on remote (non-blocking)
+    - name: Cleanup podman locks and containers on remote
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEPLOY_HOST }}
@@ -90,8 +90,10 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           sudo podman ps -a || true
+          sudo podman rm -f $(sudo podman ps -aq) || true
           sudo podman system prune -f || true
           find /run/user/$(id -u)/containers/locks/ -type f -delete || true
+
 
     - name: Configure short-name registry resolution
       uses: appleboy/ssh-action@master
@@ -145,8 +147,9 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          podman-compose down || echo "Nothing to stop"
+          podman-compose down --rmi all -v || echo "Nothing to stop"
           podman-compose --env-file .env up -d --build --no-cache
+
       
     - name: Check Loki logs
       uses: appleboy/ssh-action@master
