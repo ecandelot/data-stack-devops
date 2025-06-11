@@ -34,6 +34,8 @@ jobs:
       GRAFANA_PORT: ${{ secrets.GRAFANA_PORT }}
       GF_SECURITY_ADMIN_PASSWORD: ${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
       AIRFLOW_METRICS_EXPORTER: ${{ secrets.AIRFLOW_METRICS_EXPORTER }}
+      LOKI_PORT: ${{ secrets.LOKI_PORT }}
+      FLUENT_BIT_PORT: ${{ secrets.FLUENT_BIT_PORT }}
 
     steps:
     - name: Checkout code
@@ -64,6 +66,8 @@ jobs:
         GRAFANA_PORT=${{ secrets.GRAFANA_PORT }}
         GF_SECURITY_ADMIN_PASSWORD=${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
         AIRFLOW_METRICS_EXPORTER=${{ secrets.AIRFLOW_METRICS_EXPORTER }}
+        LOKI_PORT=${{ secrets.LOKI_PORT }}
+        FLUENT_BIT_PORT=${{ secrets.FLUENT_BIT_PORT }}
         EOF
 
     - name: Check formatting with Black (non-blocking)

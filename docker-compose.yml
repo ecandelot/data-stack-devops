@@ -77,6 +77,32 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: "${GF_SECURITY_ADMIN_PASSWORD}"
     restart: unless-stopped
 
+  loki:
+    image: grafana/loki:2.8.2
+    container_name: loki
+    ports:
+      - "${LOKI_PORT}:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./docker/loki/config.yml:/etc/loki/local-config.yaml
+  
+  fluent-bit:
+    image: fluent/fluent-bit:2.2
+    container_name: fluent-bit
+    ports:
+      - "${FLUENT_BIT_PORT}:2020"
+    volumes:
+      - ./docker/fluent-bit/fluent-bit.conf.template:/fluent-bit/etc/fluent-bit.conf.template:ro
+      - ./docker/fluent-bit/entrypoint.sh:/entrypoint.sh:ro
+      - /var/lib/containers:/var/lib/containers:ro
+      - /var/log:/var/log:ro
+    entrypoint: /entrypoint.sh
+    environment:
+      - LOKI_PORT=${LOKI_PORT}
+    depends_on:
+      - loki
+
+
 volumes:
   pg_data:
   grafana-storage:
