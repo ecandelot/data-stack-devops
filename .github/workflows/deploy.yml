@@ -158,7 +158,6 @@ jobs:
           ls -l ./docker/fluent-bit/fluent-bit.conf.template
           cat ./docker/fluent-bit/fluent-bit.conf.template
           sudo chmod +x ./docker/fluent-bit/entrypoint.sh
-          ./docker/fluent-bit/entrypoint.sh
 
 
     - name: Verify Loki and Fluent-bit config files
