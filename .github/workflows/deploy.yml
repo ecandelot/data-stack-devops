@@ -139,8 +139,8 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          sudo chmod -R 755 ./docker/loki
-          sudo chmod -R 755 ./docker/fluent-bit
+          sudo chmod -R 755 ~/stack_data/loki
+          sudo chmod -R 755 ~/stack_data/fluent-bit
 
     - name: Verify .env on remote server
       uses: appleboy/ssh-action@master
@@ -163,7 +163,7 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          sudo chmod -R 755 ./docker/fluent-bit/entrypoint.sh
+          sudo chmod -R 755 ~/stack_data/fluent-bit/entrypoint.sh
 
     - name: Verify and generate Fluent-bit config
       uses: appleboy/ssh-action@master
@@ -173,10 +173,10 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          ls -l ./docker/fluent-bit/fluent-bit.conf.template
-          cat ./docker/fluent-bit/fluent-bit.conf.template
-          sudo chmod +x ./docker/fluent-bit/entrypoint.sh
-          ./docker/fluent-bit/entrypoint.sh
+          ls -l ~/stack_data/fluent-bit/fluent-bit.conf.template
+          cat ~/stack_data/fluent-bit/fluent-bit.conf.template
+          sudo chmod +x ~/stack_data/fluent-bit/entrypoint.sh
+          ~/stack_data/fluent-bit/entrypoint.sh
 
 
     - name: Verify Loki and Fluent-bit config files
