@@ -9,12 +9,13 @@ __pycache__/
 *.log
 
 # Airflow (ne jamais commit le contenu runtime ou les bases)
-airflow.db
+airflow/airflow.db
 airflow/unittests.cfg
 airflow/logs/
 airflow/.airflowenv
 airflow/.pythonhistory
 airflow/tmp/
+
 
 # Environnement virtuel
 .venv/
@@ -48,3 +49,7 @@ trino/catalog/*.properties  # sauf si tu veux versionner un exemple générique
 # Git
 .git/
 docker/airflow/airflow.db
+
+# Logs
+logs
+logs/*
