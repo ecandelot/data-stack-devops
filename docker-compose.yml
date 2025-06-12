@@ -90,17 +90,17 @@ services:
     image: fluent/fluent-bit:2.2
     container_name: fluent-bit
     ports:
-      - "${FLUENT_BIT_PORT}:2020"
+      - "${FLUENT_BIT_PORT:-2020}:2020"
     volumes:
-      - ./docker/fluent-bit:/docker/fluent-bit:ro
-      - ./docker/fluent-bit/entrypoint.sh:/entrypoint.sh:ro
+      - ./docker/fluent-bit:/fluent-bit-conf:ro
       - /var/lib/containers:/var/lib/containers:ro
       - /var/log:/var/log:ro
+    entrypoint: /fluent-bit-conf/entrypoint.sh
     environment:
-      - LOKI_PORT=${LOKI_PORT}
-    entrypoint: /entrypoint.sh
+      - LOKI_PORT=${LOKI_PORT:-3100}
     depends_on:
       - loki
+
 
 
 volumes:

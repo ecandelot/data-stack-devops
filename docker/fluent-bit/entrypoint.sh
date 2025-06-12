@@ -1,13 +1,12 @@
 #!/bin/sh
 set -e
 
-cd /docker/fluent-bit
+cd /fluent-bit-conf
 
 echo "Using Loki port: $LOKI_PORT"
-envsubst < fluent-bit.conf.template > fluent-bit.conf
+envsubst < fluent-bit.conf.template > /fluent-bit-conf/fluent-bit.conf
 
 echo "Generated Fluent-bit configuration:"
-cat fluent-bit.conf
+cat /fluent-bit-conf/fluent-bit.conf
 
-# Exécute Fluent Bit avec la configuration générée
-exec fluent-bit -c /docker/fluent-bit/fluent-bit.conf
+exec fluent-bit -c /fluent-bit-conf/fluent-bit.conf
