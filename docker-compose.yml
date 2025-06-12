@@ -92,10 +92,13 @@ services:
     ports:
       - "${FLUENT_BIT_PORT:-2020}:2020"
     volumes:
-      - ./docker/fluent-bit:/fluent-bit-conf:ro
+      - ./docker/fluent-bit/fluent-bit.conf:/fluent-bit-conf/fluent-bit.conf:ro
+      - ./docker/fluent-bit/parsers.conf:/fluent-bit-conf/parsers.conf:ro
       - /var/lib/containers:/var/lib/containers:ro
       - /var/log:/var/log:ro
-    entrypoint: /fluent-bit-conf/entrypoint.sh
+    command: >
+      /fluent-bit/bin/fluent-bit
+      -c /fluent-bit-conf/fluent-bit.conf
     environment:
       - LOKI_PORT=${LOKI_PORT:-3100}
     depends_on:
