@@ -93,12 +93,12 @@ services:
       - "${FLUENT_BIT_PORT}:2020"
     volumes:
       - ./docker/fluent-bit:/docker/fluent-bit:ro
-      - ./docker/fluent-bit/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+      - ./docker/fluent-bit/entrypoint.sh:/entrypoint.sh:ro
       - /var/lib/containers:/var/lib/containers:ro
       - /var/log:/var/log:ro
     environment:
       - LOKI_PORT=${LOKI_PORT}
-    entrypoint: /usr/local/bin/entrypoint.sh
+    entrypoint: /entrypoint.sh
     depends_on:
       - loki
 
