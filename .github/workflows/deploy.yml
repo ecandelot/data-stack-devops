@@ -114,23 +114,6 @@ jobs:
         source: "."
         target: "~/stack_data"
 
-    - name: Fix permissions on remote host
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        key: ${{ secrets.DEPLOY_KEY }}
-        script: |
-          cd ~/stack_data
-          sudo chown -R 1000:1000 .
-          sudo chmod -R u+rwX .
-          # Déplacez le fichier config.yaml dans le bon répertoire s'il est mal placé
-          if [ -f ~/stack_data/loki/config.yaml ]; then
-            mkdir -p ~/stack_data/docker/loki
-            mv ~/stack_data/loki/config.yaml ~/stack_data/docker/loki/
-          fi
-
-
     - name: Fix permissions for config files and scripts
       uses: appleboy/ssh-action@master
       with:
@@ -138,9 +121,8 @@ jobs:
         username: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
-          cd ~/stack_data
-          sudo chmod -R 755 ~/stack_data/loki
-          sudo chmod -R 755 ~/stack_data/fluent-bit
+          sudo chmod -R 755 ~/stack_data/docker/loki
+          sudo chmod -R 755 ~/stack_data/docker/fluent-bit
 
     - name: Verify .env on remote server
       uses: appleboy/ssh-action@master
@@ -163,7 +145,7 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          sudo chmod -R 755 ~/stack_data/fluent-bit/entrypoint.sh
+          sudo chmod -R 755 ./docker/fluent-bit/entrypoint.sh
 
     - name: Verify and generate Fluent-bit config
       uses: appleboy/ssh-action@master
@@ -173,10 +155,10 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         script: |
           cd ~/stack_data
-          ls -l ~/stack_data/fluent-bit/fluent-bit.conf.template
-          cat ~/stack_data/fluent-bit/fluent-bit.conf.template
-          sudo chmod +x ~/stack_data/fluent-bit/entrypoint.sh
-          ~/stack_data/fluent-bit/entrypoint.sh
+          ls -l ./docker/fluent-bit/fluent-bit.conf.template
+          cat ./docker/fluent-bit/fluent-bit.conf.template
+          sudo chmod +x ./docker/fluent-bit/entrypoint.sh
+          ./docker/fluent-bit/entrypoint.sh
 
 
     - name: Verify Loki and Fluent-bit config files
